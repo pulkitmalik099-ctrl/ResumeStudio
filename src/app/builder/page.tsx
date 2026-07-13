@@ -9,6 +9,7 @@ import { SummaryForm } from '@/components/builder/SummaryForm';
 import { ExperienceForm } from '@/components/builder/ExperienceForm';
 import { EducationForm } from '@/components/builder/EducationForm';
 import { SkillsForm } from '@/components/builder/SkillsForm';
+import { ResumePreview } from '@/components/builder/ResumePreview';
 
 const SECTIONS = [
   { id: 'contact', label: 'Contact Info', icon: '👤' },
@@ -123,7 +124,7 @@ export default function BuilderPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-4 sticky top-24">
@@ -148,7 +149,7 @@ export default function BuilderPage() {
           </div>
 
           {/* Main Form Area */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-md p-8">
               {activeSection === 'contact' && (
                 <ContactForm
@@ -184,6 +185,14 @@ export default function BuilderPage() {
                   onChange={(skills) => setResumeData({ ...resumeData, skills })}
                 />
               )}
+            </div>
+          </div>
+
+          {/* Live Preview Pane */}
+          <div className="lg:col-span-2">
+            <div className="sticky top-24">
+              <h3 className="text-sm font-semibold text-gray-900 mb-4">Live Preview</h3>
+              <ResumePreview data={resumeData} templateId={templateId} />
             </div>
           </div>
         </div>
