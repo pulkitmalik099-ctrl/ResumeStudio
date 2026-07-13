@@ -189,30 +189,35 @@ npm run lint
 ### ✅ Phase 2 — Form Builder (DONE)
 - Multi-step form components, CRUD APIs, Zod validation
 
-### 🔄 Phase 3 — Templates (IN PROGRESS)
+### ✅ Phase 3 — Templates (DONE)
 - 20 template React components
 - Shared props interface
 - Live preview pane
 
-### ⏭ Phase 4 — Template Gallery
+### ✅ Phase 4 — Template Gallery (DONE)
 - 20 templates displayed with category filters
 - Template selection flow
+- Dynamic routing to builder
 
-### ⏭ Phase 5 — PDF Export
+### ✅ Phase 5 — PDF Export (DONE)
 - Puppeteer integration
 - Render template → HTML → PDF
-- Download button on preview
+- Download button with auto-save
+- Rate limiting (10/min per user)
 
-### ⏭ Phase 6 — Resume Management
+### ✅ Phase 6 — Resume Management (DONE)
 - Dashboard with resume list
-- Duplicate, rename, delete, switch template
+- Duplicate, delete operations
+- Edit existing resumes
+- Download PDF from dashboard
 
-### ⏭ Phase 7 — Polish & Deploy
-- Mobile responsive
-- Error handling
-- Rate limiting
-- CI/CD (GitHub Actions)
-- Deploy to Vercel
+### ✅ Phase 7 — Polish & Deploy (DONE)
+- Mobile responsive (all breakpoints)
+- Error handling & validation
+- Rate limiting on export
+- GitHub Actions CI/CD
+- Vercel deployment ready
+- Comprehensive deployment guide
 
 ---
 

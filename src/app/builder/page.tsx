@@ -41,12 +41,32 @@ export default function BuilderPage() {
   const [templateId] = useState(searchParams.get('template') || 'classic-chronological');
 
   const { status: authStatus } = useSession();
+  const resumeIdFromUrl = searchParams.get('resume-id');
 
   useEffect(() => {
     if (authStatus === 'unauthenticated') {
       router.push('/login');
     }
   }, [authStatus, router]);
+
+  // Load existing resume if ID is provided
+  useEffect(() => {
+    if (resumeIdFromUrl) {
+      const loadResume = async () => {
+        try {
+          const res = await fetch(`/api/resumes/${resumeIdFromUrl}`);
+          if (res.ok) {
+            const resume = await res.json();
+            setResumeTitle(resume.title);
+            setResumeData(resume.data);
+          }
+        } catch (error) {
+          console.error('Failed to load resume:', error);
+        }
+      };
+      loadResume();
+    }
+  }, [resumeIdFromUrl]);
 
   const handleSaveResume = async () => {
     if (!session?.user?.id) return;
@@ -77,8 +97,57 @@ export default function BuilderPage() {
   };
 
   const handleExport = async () => {
-    // TODO: Implement PDF export
-    alert('PDF export coming in Phase 5');
+    if (!resumeData.contact.fullName || !resumeData.contact.email) {
+      alert('Please fill in at least Name and Email before downloading');
+      return;
+    }
+
+    try {
+      // If resume is not saved yet, save it first
+      let resumeIdToExport = searchParams.get('resume-id');
+
+      if (!resumeIdToExport) {
+        setSaving(true);
+        const saveRes = await fetch('/api/resumes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: resumeTitle,
+            templateId,
+            data: resumeData,
+          }),
+        });
+
+        if (!saveRes.ok) throw new Error('Failed to save resume');
+        const saved = await saveRes.json();
+        resumeIdToExport = saved.id;
+        setSaving(false);
+      }
+
+      // Download PDF
+      const downloadRes = await fetch('/api/export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resumeId: resumeIdToExport }),
+      });
+
+      if (!downloadRes.ok) throw new Error('Failed to export PDF');
+
+      const blob = await downloadRes.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${resumeTitle.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      alert('Resume downloaded successfully!');
+    } catch (error) {
+      alert('Failed to download resume');
+      console.error(error);
+    }
   };
 
   if (status === 'loading') {
@@ -124,9 +193,9 @@ export default function BuilderPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {/* Sidebar Navigation */}
-          <div className="lg:col-span-1">
+          <div className="md:col-span-2 lg:col-span-1">
             <div className="bg-white rounded-lg shadow-md p-4 sticky top-24">
               <h3 className="text-sm font-semibold text-gray-900 mb-4 uppercase">Sections</h3>
               <nav className="space-y-2">
@@ -149,8 +218,8 @@ export default function BuilderPage() {
           </div>
 
           {/* Main Form Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-8">
+          <div className="md:col-span-2 lg:col-span-2">
+            <div className="bg-white rounded-lg shadow-md p-6 sm:p-8">
               {activeSection === 'contact' && (
                 <ContactForm
                   data={resumeData.contact}
@@ -189,7 +258,7 @@ export default function BuilderPage() {
           </div>
 
           {/* Live Preview Pane */}
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2 lg:col-span-2">
             <div className="sticky top-24">
               <h3 className="text-sm font-semibold text-gray-900 mb-4">Live Preview</h3>
               <ResumePreview data={resumeData} templateId={templateId} />

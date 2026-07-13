@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const TEMPLATE_CATEGORIES = [
   { id: 'ats', name: 'ATS-Friendly', color: 'blue' },
@@ -36,6 +37,7 @@ const TEMPLATES = [
 ];
 
 export default function TemplatesPage() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredTemplates = selectedCategory
@@ -110,12 +112,12 @@ export default function TemplatesPage() {
                   Category: {TEMPLATE_CATEGORIES.find((c) => c.id === template.category)?.name}
                 </p>
 
-                <Link
-                  href={`/builder?template=${template.id}`}
+                <button
+                  onClick={() => router.push(`/builder?template=${template.id}`)}
                   className="w-full py-2 px-4 bg-indigo-600 text-white text-center rounded-lg hover:bg-indigo-700 font-medium transition-colors"
                 >
                   Use This Template
-                </Link>
+                </button>
               </div>
             </div>
           ))}
